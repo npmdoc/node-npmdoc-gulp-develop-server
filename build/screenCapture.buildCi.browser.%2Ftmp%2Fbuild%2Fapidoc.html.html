@@ -1,0 +1,533 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/narirou/gulp-develop-server#readme">gulp-develop-server (v0.5.2)</a>
+</h1>
+<h4>run node.js server and automatically restart for your development.</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.gulp-develop-server">module gulp-develop-server</a><ol>
+
+        <li>
+
+            <span class="apidocSignatureSpan">boolean <span class="apidocSignatureSpan">gulp-develop-server.</span>isChanged</span>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-develop-server.gulp-develop-server">
+            function <span class="apidocSignatureSpan"></span>gulp-develop-server
+            <span class="apidocSignatureSpan">( options )</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-develop-server.changed">
+            function <span class="apidocSignatureSpan">gulp-develop-server.</span>changed
+            <span class="apidocSignatureSpan">( callback )</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-develop-server.kill">
+            function <span class="apidocSignatureSpan">gulp-develop-server.</span>kill
+            <span class="apidocSignatureSpan">( signal, callback )</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-develop-server.listen">
+            function <span class="apidocSignatureSpan">gulp-develop-server.</span>listen
+            <span class="apidocSignatureSpan">( options, callback )</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-develop-server.reset">
+            function <span class="apidocSignatureSpan">gulp-develop-server.</span>reset
+            <span class="apidocSignatureSpan">( signal, callback )</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gulp-develop-server.restart">
+            function <span class="apidocSignatureSpan">gulp-develop-server.</span>restart
+            <span class="apidocSignatureSpan">( callback )</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">gulp-develop-server.</span>child</span>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">gulp-develop-server.</span>options</span>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.gulp-develop-server" id="apidoc.module.gulp-develop-server">module gulp-develop-server</a></h1>
+
+
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-develop-server.gulp-develop-server" id="apidoc.element.gulp-develop-server.gulp-develop-server">
+        function <span class="apidocSignatureSpan"></span>gulp-develop-server
+        <span class="apidocSignatureSpan">( options )</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function serverStream( options ) {
+	var stream = new Transform( { objectMode: true } ),
+		isStream = false;
+
+	// override default options
+	if( ! app.child &amp;&amp; typeof options === 'object' ) {
+		_.merge( app.options, options );
+	}
+
+	stream._transform = function( file, encoding, callback ) {
+		var pushFile = function() {
+			stream.push( file );
+			callback();
+		};
+
+		if( ! isStream ) {
+			isStream = true;
+			return app.changed( pushFile );
+		}
+
+		pushFile();
+	};
+
+	stream.on( 'finish', function() {
+		isStream = false;
+	});
+
+	return stream;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-develop-server.changed" id="apidoc.element.gulp-develop-server.changed">
+        function <span class="apidocSignatureSpan">gulp-develop-server.</span>changed
+        <span class="apidocSignatureSpan">( callback )</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">changed = function ( callback ) {
+
+	// ensure restart when child process cannot connect
+	if( app.child &amp;&amp; !app.child.connected ) {
+		app.child = null;
+	}
+
+	// already called this function
+	if( app.isChanged ) {
+		return done( null, 'Development server already received restart requests.', callback );
+	}
+
+	// restart server
+	var restarted = function( error ) {
+		app.isChanged = false;
+		return done( error, gutil.colors.cyan( 'Development server was restarted.' ), callback );
+	};
+
+	if( app.child ) {
+		app.isChanged = true;
+		return app.kill( function() {
+			app.listen( restarted );
+		});
+	}
+
+	// if server not started, try to start using options.path
+	else if( app.options.path ) {
+		app.isChanged = true;
+		return app.listen( restarted );
+	}
+
+	// server not started
+	throw new gutil.PluginError( pluginName, 'Development server not started.' );
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+- `killSignal`
+    - type: {String}
+    - default: `SIGTERM`
+
+**callback( error )**
+
+
+###server.restart( [callback] ) / server.<span class="apidocCodeKeywordSpan">changed</span>( [callback] )
+
+**callback( error )**
+
+
+###server( [options] )
+
+Create a `Transform` stream.
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-develop-server.kill" id="apidoc.element.gulp-develop-server.kill">
+        function <span class="apidocSignatureSpan">gulp-develop-server.</span>kill
+        <span class="apidocSignatureSpan">( signal, callback )</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">kill = function ( signal, callback ) {
+
+	// fallback arguments
+	if( typeof signal === 'function' ) {
+		callback = signal;
+		signal = app.options.killSignal;
+	}
+	else {
+		signal = signal || app.options.killSignal;
+	}
+
+	// send kill signal
+	if( app.child ) {
+		var pid = gutil.colors.magenta( app.child.pid );
+
+		var stopped = function() {
+			done( null, 'Development server was stopped. (PID:' + pid + ')', callback );
+		};
+
+		app.child.once( 'close', stopped );
+		app.child.kill( signal );
+
+		return app;
+	}
+
+	// server already stopped
+	return done( 'Development server already stopped.', callback );
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+###server( [options] )
+
+Create a `Transform` stream.
+Restart the server at once when this stream gets files.
+
+
+###server.<span class="apidocCodeKeywordSpan">kill</span>( [signal, callback] )
+
+Send kill signal to the server process.
+**signal {String}**
+**callback( error )**
+
+
+###server.reset( [signal, callback] )
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-develop-server.listen" id="apidoc.element.gulp-develop-server.listen">
+        function <span class="apidocSignatureSpan">gulp-develop-server.</span>listen
+        <span class="apidocSignatureSpan">( options, callback )</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">listen = function ( options, callback ) {
+
+	// throw error when options is not set
+	if( ! app.options.path &amp;&amp; typeof options.path !== 'string' ) {
+		throw new gutil.PluginError( pluginName, 'application `path` required.' );
+	}
+
+	// fallback arguments
+	if( typeof options === 'function' ) {
+		callback = options;
+		options = {};
+	}
+
+	// server already started
+	if( app.child &amp;&amp; app.child.connected ) {
+		return done( 'Development server already started.', callback );
+	}
+
+	// override default options
+	if( typeof options === 'object' ) {
+		_.merge( app.options, options );
+	}
+
+	// run server process
+	var child = fork( app.options.path, app.options.args, {
+		cwd:      app.options.cwd,
+		env:      app.options.env,
+		execPath: app.options.execPath,
+		execArgv: app.options.execArgv,
+		gid:      app.options.gid,
+		uid:      app.options.uid,
+		silent:   true
+	});
+
+	var timer;
+
+	var initialized = _.once( function( error ) {
+		if( timer ) {
+			timer = clearTimeout( timer );
+		}
+
+		if( error ) {
+			gutil.log( gutil.colors.red( error ) );
+			done( error, callback );
+		}
+		else {
+			var pid = gutil.colors.magenta( child.pid );
+			app.child = child;
+			done( null, 'Development server listening. (PID:' + pid + ')', callback );
+		}
+
+		child.stderr.removeListener( 'data', errorListener );
+		child.removeListener( 'message', successMessageListener );
+	});
+
+	// initialized by timer using `delay`
+	if( app.options.delay &gt; 0 ) {
+		timer = setTimeout( initialized, app.options.delay );
+	}
+
+	// initialized by `successMessage`
+	var successMessageListener = function( message ) {
+		if( typeof message === 'string' &amp;&amp; message.match( app.options.successMessage ) ) {
+			initialized();
+		}
+	};
+	child.on( 'message', successMessageListener );
+
+	// initialized by `errorMessage` if server printed error
+	var errorListener = function( error ) {
+		if( error instanceof Buffer &amp;&amp; error.toString().match( app.options.errorMessage ) ) {
+			initialized( 'Development server has error.' );
+		}
+	};
+	child.stderr.on( 'data', errorListener );
+
+	// handling exit of child process
+	child.once( 'exit', function() {
+		app.child = null;
+	});
+
+	// pipe child_process's stdout / stderr
+	child.stdout.pipe( process.stdout );
+	child.stderr.pipe( process.stderr );
+
+	// bind process event
+	handlingProcessEvent();
+
+	return app;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+```javascript
+var gulp   = require( 'gulp' ),
+    server = require( 'gulp-develop-server' );
+
+// run server
+gulp.task( 'server:start', function() {
+    server.<span class="apidocCodeKeywordSpan">listen</span>( { path: './app.js' } );
+});
+
+// restart server if app.js changed
+gulp.task( 'server:restart', function() {
+    gulp.watch( [ './app.js' ], server.restart );
+});
+```
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-develop-server.reset" id="apidoc.element.gulp-develop-server.reset">
+        function <span class="apidocSignatureSpan">gulp-develop-server.</span>reset
+        <span class="apidocSignatureSpan">( signal, callback )</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">reset = function ( signal, callback ) {
+
+	// fallback arguments
+	if( typeof signal === 'function' ) {
+		callback = signal;
+		signal = app.options.killSignal;
+	}
+	else {
+		signal = signal || app.options.killSignal;
+	}
+
+	// kill server process and then reset options
+	var stopped = function( error ) {
+		app.options = _.cloneDeep( defaultOptions );
+		done( error, callback );
+	};
+
+	return app.kill( signal, stopped );
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+###server.kill( [signal, callback] )
+
+Send kill signal to the server process.
+**signal {String}**
+**callback( error )**
+
+
+###server.<span class="apidocCodeKeywordSpan">reset</span>( [signal, callback] )
+
+Send kill signal to the server process and reset the options to default.
+**signal {String}**
+**callback( error )**
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.gulp-develop-server.restart" id="apidoc.element.gulp-develop-server.restart">
+        function <span class="apidocSignatureSpan">gulp-develop-server.</span>restart
+        <span class="apidocSignatureSpan">( callback )</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">restart = function ( callback ) {
+
+	// ensure restart when child process cannot connect
+	if( app.child &amp;&amp; !app.child.connected ) {
+		app.child = null;
+	}
+
+	// already called this function
+	if( app.isChanged ) {
+		return done( null, 'Development server already received restart requests.', callback );
+	}
+
+	// restart server
+	var restarted = function( error ) {
+		app.isChanged = false;
+		return done( error, gutil.colors.cyan( 'Development server was restarted.' ), callback );
+	};
+
+	if( app.child ) {
+		app.isChanged = true;
+		return app.kill( function() {
+			app.listen( restarted );
+		});
+	}
+
+	// if server not started, try to start using options.path
+	else if( app.options.path ) {
+		app.isChanged = true;
+		return app.listen( restarted );
+	}
+
+	// server not started
+	throw new gutil.PluginError( pluginName, 'Development server not started.' );
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+- `killSignal`
+    - type: {String}
+    - default: `SIGTERM`
+
+**callback( error )**
+
+
+###server.<span class="apidocCodeKeywordSpan">restart</span>( [callback] ) / server.changed( [callback] )
+
+**callback( error )**
+
+
+###server( [options] )
+
+Create a `Transform` stream.
+...</pre></li>
+    </ul>
+
+
+
+
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
